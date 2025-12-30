@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Wish - Order Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #06b6d4;
+            --light-bg: #f8fafc;
+            --dark-text: #1e293b;
+            --text-secondary: #64748b;
+            --card-bg: #ffffff;
+            --sidebar-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --header-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --hover-bg: #f1f5f9;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --rounded: 16px;
+            --rounded-md: 12px;
+            --rounded-sm: 8px;
+        }
+        
+        /* Remove dark mode */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background: var(--sidebar-bg);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 280px;
+            padding-top: 20px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .sidebar a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 14px 24px;
+            display: block;
+            transition: all 0.4s ease;
+            border-radius: var(--rounded-sm);
+            margin: 4px 12px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+        
+        .sidebar a:hover::before {
+            left: 100%;
+        }
+        
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left: 3px solid var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .sidebar a i {
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-in forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 20px 30px;
+            border-radius: var(--rounded);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--rounded);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            background: var(--card-bg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-5px) scale(1.01);
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 24px;
+            font-weight: 600;
+            color: white;
+            border-radius: calc(var(--rounded) - 2px) calc(var(--rounded) - 2px) 0 0 !important;
+        }
+        
+        .dark-mode .card-header {
+            color: var(--dark-text);
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 24px;
+            background: var(--card-bg);
+            border-radius: var(--rounded);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+        
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-card i {
+            font-size: 2.8rem;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover h4,
+        .stat-card:hover p {
+            transform: scale(1.05);
+        }
+        
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: var(--rounded-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-onway {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #2563eb;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .status-delivered {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-cancelled {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .dark-mode .status-pending {
+            background-color: rgba(217, 119, 6, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+        
+        .dark-mode .status-onway {
+            background-color: rgba(37, 99, 235, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(37, 99, 235, 0.3);
+        }
+        
+        .dark-mode .status-delivered {
+            background-color: rgba(5, 150, 105, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+        
+        .dark-mode .status-cancelled {
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+        
+        .order-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: var(--rounded-md);
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--card-bg);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25), 0 5px 15px rgba(99, 102, 241, 0.1);
+            outline: none;
+            transform: translateY(-2px);
+        }
+        
+        .form-control:hover, .form-select:hover {
+            border-color: var(--primary-hover);
+        }
+        
+        .btn {
+            border-radius: var(--rounded-md);
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            transform: translateX(-100%);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover), #7c3aed);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            border: none;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #047857, #047857);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-outline-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+        
+        .btn-outline-primary:hover::before {
+            left: 0;
+        }
+        
+        .btn-outline-primary:hover {
+            color: white;
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-outline-secondary {
+            border: 2px solid var(--text-secondary);
+            color: var(--text-secondary);
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-outline-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--text-secondary), var(--primary-color));
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+        
+        .btn-outline-secondary:hover::before {
+            left: 0;
+        }
+        
+        .btn-outline-secondary:hover {
+            color: white;
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-outline-danger {
+            border: 2px solid var(--danger-color);
+            color: var(--danger-color);
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-outline-danger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--danger-color), var(--warning-color));
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+        
+        .btn-outline-danger:hover::before {
+            left: 0;
+        }
+        
+        .btn-outline-danger:hover {
+            color: white;
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: var(--shadow);
+        }
+        
+        .table {
+            border-radius: var(--rounded);
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+        
+        .table th {
+            background: var(--hover-bg);
+            font-weight: 600;
+            color: var(--dark-text);
+            border: none;
+            padding: 12px 16px;
+        }
+        
+        .dark-mode .table th {
+            background: var(--hover-bg);
+            color: var(--dark-text);
+        }
+        
+        .table td {
+            border-top: 1px solid var(--border-color);
+            color: var(--dark-text);
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+        
+        .dark-mode .table td {
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .login-container {
+            background: var(--card-bg);
+            border-radius: var(--rounded);
+            box-shadow: var(--shadow-lg);
+            padding: 50px;
+            max-width: 500px;
+            margin: 100px auto;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+        }
+        
+        .sidebar .text-center h4 {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.5rem;
+        }
+        
+        .sidebar .text-center p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .pagination .page-link {
+            border-radius: var(--rounded-sm);
+            margin: 0 3px;
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            background: var(--card-bg);
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .dark-mode .pagination .page-link {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .toast {
+            border-radius: var(--rounded-md);
+            border: none;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            border-radius: var(--rounded);
+            border: none;
+            box-shadow: var(--shadow-lg);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .input-group .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .login-container {
+                margin: 50px auto;
+                padding: 30px;
+            }
+            
+            .stat-card {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="container">
+        <div class="login-container">
+            <h2 class="text-center mb-4">Your Wish</h2>
+            <p class="text-center text-muted mb-4">Owner Login</p>
+            
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" autocomplete="off" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" autocomplete="off" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+            
+            <div id="loginError" class="alert alert-danger mt-3 d-none" role="alert">
+                Invalid credentials. Please try again.
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="d-none">
+        <div class="sidebar">
+            <div class="text-center mb-4">
+                <h4>Your Wish</h4>
+                <p class="text-light">Owner Dashboard</p>
+            </div>
+            <a href="#" class="active" id="dashboardNav"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+            <a href="#" id="addOrderNav"><i class="fas fa-plus-circle me-2"></i>Add Order</a>
+            <a href="#" id="ordersNav"><i class="fas fa-list me-2"></i>All Orders</a>
+            <a href="#" id="analyticsNav"><i class="fas fa-chart-bar me-2"></i>Analytics</a>
+            <a href="#" id="settingsNav"><i class="fas fa-cog me-2"></i>Settings</a>
+            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            
+            <div class="mt-auto p-3 border-top border-secondary">
+                <div class="text-center text-light">
+                    <small>Your Wish</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header d-flex justify-content-between align-items-center">
+                <h3 id="pageTitle">Dashboard</h3>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="dashboardView">
+                <div class="row mb-4">
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-shopping-cart text-primary"></i>
+                            <h4 id="totalOrders">0</h4>
+                            <p class="text-muted">Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <h4 id="deliveredOrders">0</h4>
+                            <p class="text-muted">Delivered</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-clock text-warning"></i>
+                            <h4 id="pendingOrders">0</h4>
+                            <p class="text-muted">Pending</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-rupee-sign text-info"></i>
+                            <h4 id="totalRevenue">₹0</h4>
+                            <p class="text-muted">Revenue</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Recent Orders</h5>
+                        <button class="btn btn-primary" id="viewAllOrdersBtn">View All</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentOrdersList">
+                            <p class="text-center text-muted">Loading recent orders...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Order Form -->
+            <div id="addOrderView" class="d-none">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Order</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="addOrderForm">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="customerName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control form-control-lg" id="customerName" placeholder="Enter customer name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="phoneNumber" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                                <input type="tel" class="form-control form-control-lg" id="phoneNumber" placeholder="Enter phone number" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="deliveryAddress" class="form-label">Delivery Address <span class="text-danger">*</span></label>
+                                                <textarea class="form-control form-control-lg" id="deliveryAddress" rows="3" placeholder="Enter full delivery address" required></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="orderNotes" class="form-label">Notes (Landmark, preferred time)</label>
+                                                <textarea class="form-control form-control-lg" id="orderNotes" rows="2" placeholder="Enter any additional notes"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0"><i class="fas fa-box me-2"></i>Product Information</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control form-control-lg" id="productName" placeholder="Enter product name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="productCategory" class="form-label">Product Category</label>
+                                                <input type="text" class="form-control form-control-lg" id="productCategory" placeholder="Enter product category (optional)">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="productImage" class="form-label">Product Image</label>
+                                                <input type="file" class="form-control form-control-lg" id="productImage" accept="image/*">
+                                                <div class="form-text">Upload product image (optional)</div>
+                                            </div>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                                                    <input type="number" class="form-control form-control-lg" id="quantity" min="1" value="1" required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="pricePerProduct" class="form-label">Price per Product (₹) <span class="text-danger">*</span></label>
+                                                    <input type="number" class="form-control form-control-lg" id="pricePerProduct" min="0" step="0.01" placeholder="0.00" required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="discount" class="form-label">Discount (%)</label>
+                                                <input type="number" class="form-control form-control-lg" id="discount" min="0" max="100" value="0" placeholder="0">
+                                            </div>
+                                            <div class="mb-3 mt-2">
+                                                <label for="totalPrice" class="form-label">Total Price (₹)</label>
+                                                <input type="number" class="form-control form-control-lg bg-white" id="totalPrice" min="0" step="0.01" placeholder="0.00" readonly>
+                                                <div class="form-text">Auto-calculated based on quantity and discount</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0"><i class="fas fa-calendar me-2"></i>Order Details</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="orderDate" class="form-label">Order Date <span class="text-danger">*</span></label>
+                                                <input type="date" class="form-control form-control-lg" id="orderDate" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-truck me-2"></i>Delivery Status</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="deliveryStatus" class="form-label">Current Status <span class="text-danger">*</span></label>
+                                                <select class="form-select form-select-lg" id="deliveryStatus" required>
+                                                    <option value="Pending">📦 Pending</option>
+                                                    <option value="On the Way">🟡 On the Way</option>
+                                                    <option value="Delivered">🟢 Delivered</option>
+                                                    <option value="Not Delivered / Cancelled">🔴 Not Delivered / Cancelled</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-center gap-3 mt-4 pt-3">
+                                <button type="submit" class="btn btn-success btn-lg px-4">
+                                    <i class="fas fa-save me-2"></i>Save Order
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-lg px-4" id="saveAndAddNew">
+                                    <i class="fas fa-plus me-2"></i>Save & Add New
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-lg px-4" id="resetForm">
+                                    <i class="fas fa-redo me-2"></i>Reset Form
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-lg px-4" id="cancelAddOrder">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Orders View -->
+            <div id="ordersView" class="d-none">
+                <div class="card">
+                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                        <h5>All Orders</h5>
+                        <div class="d-flex flex-column flex-md-row gap-2 w-100 w-md-auto">
+                            <div class="input-group" style="max-width: 300px;">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search by name or phone...">
+                                <button class="btn btn-outline-secondary" id="searchBtn"><i class="fas fa-search"></i></button>
+                            </div>
+                            <select class="form-select" id="statusFilter" style="max-width: 200px;">
+                                <option value="">All Statuses</option>
+                                <option value="Pending">Pending</option>
+                                <option value="On the Way">On the Way</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Not Delivered / Cancelled">Cancelled</option>
+                            </select>
+                            <select class="form-select" id="sortFilter" style="max-width: 200px;">
+                                <option value="date-desc">Date (Newest)</option>
+                                <option value="date-asc">Date (Oldest)</option>
+                                <option value="price-desc">Price (High to Low)</option>
+                                <option value="price-asc">Price (Low to High)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Phone</th>
+                                        <th>Product</th>
+                                        <th>Total Price</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center">Loading orders...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <nav aria-label="Orders pagination">
+                            <ul class="pagination justify-content-center" id="pagination">
+                                <!-- Pagination will be populated dynamically -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Detail View -->
+            <div id="orderDetailView" class="d-none">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Order Details</h5>
+                        <button class="btn btn-secondary" id="backToOrders">Back to Orders</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="orderDetailContent">
+                            <p class="text-center text-muted">Loading order details...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div id="analyticsView" class="d-none">
+                <div class="row mb-4">
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-shopping-cart text-primary"></i>
+                            <h4 id="analyticsTotalOrders">0</h4>
+                            <p class="text-muted">Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <h4 id="analyticsDeliveredOrders">0</h4>
+                            <p class="text-muted">Delivered</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-clock text-warning"></i>
+                            <h4 id="analyticsPendingOrders">0</h4>
+                            <p class="text-muted">Pending</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card stat-card">
+                            <i class="fas fa-rupee-sign text-info"></i>
+                            <h4 id="analyticsTotalRevenue">₹0</h4>
+                            <p class="text-muted">Revenue</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Order Status Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settingsView" class="d-none">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cog me-2"></i>Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6><i class="fas fa-palette me-2"></i>Appearance</h6>
+                                        <p class="text-muted mb-0">Light theme active</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6><i class="fas fa-user-lock me-2"></i>Security</h6>
+                                        <button class="btn btn-outline-primary w-100" id="changePasswordBtn">Change Password</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editOrderModalLabel"><i class="fas fa-edit me-2"></i>Edit Order</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editOrderForm">
+                        <input type="hidden" id="editOrderId">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="editCustomerName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control form-control-lg" id="editCustomerName" placeholder="Enter customer name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editPhoneNumber" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                            <input type="tel" class="form-control form-control-lg" id="editPhoneNumber" placeholder="Enter phone number" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editDeliveryAddress" class="form-label">Delivery Address <span class="text-danger">*</span></label>
+                                            <textarea class="form-control form-control-lg" id="editDeliveryAddress" rows="3" placeholder="Enter full delivery address" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editOrderNotes" class="form-label">Notes (Landmark, preferred time)</label>
+                                            <textarea class="form-control form-control-lg" id="editOrderNotes" rows="2" placeholder="Enter any additional notes"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="fas fa-box me-2"></i>Product Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="editProductName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control form-control-lg" id="editProductName" placeholder="Enter product name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editProductCategory" class="form-label">Product Category</label>
+                                            <input type="text" class="form-control form-control-lg" id="editProductCategory" placeholder="Enter product category (optional)">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editProductImage" class="form-label">Product Image</label>
+                                            <input type="file" class="form-control form-control-lg" id="editProductImage" accept="image/*">
+                                            <div class="form-text">Upload product image (optional)</div>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="editQuantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control form-control-lg" id="editQuantity" min="1" value="1" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="editPricePerProduct" class="form-label">Price per Product (₹) <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control form-control-lg" id="editPricePerProduct" min="0" step="0.01" placeholder="0.00" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editDiscount" class="form-label">Discount (%)</label>
+                                            <input type="number" class="form-control form-control-lg" id="editDiscount" min="0" max="100" value="0" placeholder="0">
+                                        </div>
+                                        <div class="mb-3 mt-2">
+                                            <label for="editTotalPrice" class="form-label">Total Price (₹)</label>
+                                            <input type="number" class="form-control form-control-lg bg-white" id="editTotalPrice" min="0" step="0.01" placeholder="0.00" readonly>
+                                            <div class="form-text">Auto-calculated based on quantity and discount</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0"><i class="fas fa-calendar me-2"></i>Order Details</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="editOrderDate" class="form-label">Order Date <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-lg" id="editOrderDate" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0"><i class="fas fa-truck me-2"></i>Delivery Status</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="editDeliveryStatus" class="form-label">Current Status <span class="text-danger">*</span></label>
+                                            <select class="form-select form-select-lg" id="editDeliveryStatus" required>
+                                                <option value="Pending">📦 Pending</option>
+                                                <option value="On the Way">🟡 On the Way</option>
+                                                <option value="Delivered">🟢 Delivered</option>
+                                                <option value="Not Delivered / Cancelled">🔴 Not Delivered / Cancelled</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="saveOrderChanges">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                Toast message
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
